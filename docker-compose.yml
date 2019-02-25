@@ -1,0 +1,35 @@
+version: "2"
+services:
+  udpbdct_sender:
+    container_name: udpbdct_sender
+    image: udpbdct
+    environment:
+      - UDP_IP=10.255.255.255
+    entrypoint:
+      - python
+      - udpbdct.py
+      - sender
+    networks:
+      - udpbdct_net
+  udpbdct_listener1:
+    container_name: udpbdct_listener1
+    image: udpbdct
+    networks:
+      - udpbdct_net
+  udpbdct_listener2:
+    container_name: udpbdct_listener2
+    image: udpbdct
+    networks:
+      - udpbdct_net
+  udpbdct_listener3:
+    container_name: udpbdct_listener3
+    image: udpbdct
+    networks:
+      - udpbdct_net
+networks:
+  udpbdct_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 10.0.0.0/8

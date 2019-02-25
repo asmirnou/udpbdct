@@ -1,0 +1,45 @@
+# Google Cloud or Amazon Virtual Private Cloud Networks do not support broadcast or multicast.
+# Thus, on Kubernetes  the broadcasted UDP packets won't reach the destination.
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: udpbdct-sender
+  namespace: test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: udpbdct
+        component: sender
+    spec:
+      containers:
+      - name: udpbdct-sender
+        image: us.gcr.io/mirror-1363/udpbdct/udpbdct:latest
+        args:
+        - "sender"
+        env:
+        - name: "UDP_IP"
+          value: "10.255.255.255"
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: udpbdct-listener
+  namespace: test
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: udpbdct
+        component: listener
+    spec:
+      containers:
+      - name: udpbdct-listener
+        image: us.gcr.io/mirror-1363/udpbdct/udpbdct:latest
+        ports:
+        - name: udp
+          containerPort: 3000
+          protocol: UDP
